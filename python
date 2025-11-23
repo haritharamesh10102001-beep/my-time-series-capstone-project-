@@ -1,0 +1,65 @@
+# Capstone_Project.ipynb - Essential Code Snippet for Model Architecture
+
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Input, Layer
+from tensorflow.keras.models import Model
+import tensorflow.keras.backend as K
+import tensorflow as tf
+
+# 1. Custom Attention Layer (Bahdanau-style)
+class AttentionLayer(Layer):
+    def __init__(self, **kwargs):
+        super(AttentionLayer, self).__init__(**kwargs)
+
+    def build(self, input_shape):
+        # W: weight matrix for hidden state transformation
+        self.W = self.add_weight(name='att_weight_W', shape=(input_shape[-1], input_shape[-1]),
+                                 initializer='glorot_uniform', trainable=True)
+        # U: weight matrix for context vector query
+        self.U = self.add_weight(name='att_weight_U', shape=(input_shape[-1], input_shape[-1]),
+                                 initializer='glorot_uniform', trainable=True)
+        # V: weight vector to create alignment score (vector)
+        self.V = self.add_weight(name='att_weight_V', shape=(input_shape[-1], 1),
+                                 initializer='glorot_uniform', trainable=True)
+        super(AttentionLayer, self).build(input_shape)
+
+    def call(self, inputs):
+        # 1. Calculate energy/alignment scores (e_t)
+        # e = tanh(H_t * W + H_T * U)
+        H_t = K.tanh(K.dot(inputs, self.W))
+        e = K.dot(H_t, self.V)  # e.shape = (batch_size, T, 1)
+        e = K.squeeze(e, axis=-1)
+
+        # 2. Apply Softmax to get attention weights (alpha_t)
+        alpha = K.softmax(e)
+        self.attention_weights = alpha # Store weights for interpretation
+
+        # 3. Create context vector (C)
+        # C = sum(alpha_t * H_t)
+        context = inputs * K.expand_dims(alpha, axis=-1)
+        context = K.sum(context, axis=1) # context.shape = (batch_size, hidden_dim)
+
+        return context
+
+    def get_config(self):
+        return super(AttentionLayer, self).get_config()
+    
+# 2. Attention-LSTM Model Definition
+def build_attention_lstm(time_steps, feature_count):
+    inputs = Input(shape=(time_steps, feature_count))
+    # Encoder: LSTM returns sequence of hidden states
+    lstm_out = LSTM(64, return_sequences=True, name='lstm_encoder')(inputs)
+    
+    # Attention Layer
+    attention_out = AttentionLayer(name='attention_mechanism')(lstm_out)
+    
+    # Dropout and Dense layers for final prediction
+    dropout_out = Dropout(0.2)(attention_out)
+    output = Dense(1, activation='linear', name='final_output')(dropout_out)
+    
+    model = Model(inputs=inputs, outputs=output)
+    model.compile(optimizer='adam', loss='mse')
+    return model
+
+# Example usage (Training, Evaluation, and Extraction of Attention weights would follow this)
+# model = build_attention_lstm(time_steps=24, feature_count=11)
+# model.summary() # Output would show the layers including 'attention_mechanism'
