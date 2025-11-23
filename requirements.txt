@@ -1,0 +1,15 @@
+ '''Attention-LSTM Time Series Forecasting (TensorFlow, Synthetic Data)'''
+Install necessary libraries: tensorflow yfinance scikit-learn 
+Import files: numpy | pandas | import yfinance | matplotlib.pyplot | tensorflow (keras.models -- Sequentaial, Model ) ( keras.layers -- LSTM, Dense, Dropout, Input, Layer  ) (  keras.callbacks -- EarlyStopping ) | sklearn ( preprocessing -- MinMaxScaler) (metrics -- mean_squared_error, mean_absloute_error) 
+Random seeds setting -- numpy & tensorflow
+Define -- ticker symbol and data range
+ Download the data
+Select the features we want to use
+Handle missing values
+Display the first few rows and data info
+Data Visualization
+Data Preprocessing -- Scaling, Sequencing windowing, Train - Validatin - Test Split
+Model Building -- Baseline LSTM |(Custom Attention Layer)| Attention-LSTM
+Model Training -- Training History Visualization
+Evaluation and Comparison -- Prediction Visualization
+Attention Weight Interpretation 
