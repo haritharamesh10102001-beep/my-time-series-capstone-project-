@@ -1,0 +1,11 @@
+Tasks to Complete 
+
+1 Acquire or programmatically generate a multivariate time series dataset consisting of at least 1000 observations. If using a built-in dataset, ensure it contains multiple correlated features (e.g., stock market indices or environmental readings).
+
+2 Implement the data pipeline: perform necessary preprocessing (scaling, sequence windowing for supervised learning), and split the data into training, validation, and test sets.
+
+3 Develop and implement a custom Attention Mechanism layer compatible with PyTorch or TensorFlow/Keras. Integrate this layer into an LSTM architecture to create the final Attention-LSTM forecasting model.
+
+4 Train the Attention-LSTM model, optimize hyperparameters using the validation set, and rigorously evaluate its performance on the held-out test set against a baseline model (e.g., a standard LSTM without attention).
+
+5 Conduct a thorough analysis comparing the models based on standard metrics (RMSE, MAE) and qualitative analysis of attention weights to interpret which input features/time steps the model prioritized during prediction.
